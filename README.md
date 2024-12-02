@@ -1,179 +1,30 @@
-# MySQL
-Data cleaning Project in MySQL
+# Data Cleaning Project Focused on Global Layoffs
+Project Overview: This project involves cleaning and preparing a dataset focused on global layoffs for analysis. To ensure that the dataset is accurate Data cleaning is a crucial step , consistent, and ready for meaningful insights. This project demonstrates the process of transforming raw, messy data into a clean and reliable dataset
+## Implementation Details:
+1.Data Collection:
+o	Collect data from public sources such as Alex the analytic .
+2.Initial Data Exploration:
+o	Use Python to explore the dataset, understand its structure, and identify any obvious issues.
+3.Handling Missing Values:
+o	Identify columns with missing values and decide on an appropriate strategy (e.g., filling with mean/median, dropping rows/columns).
+4.Removing Duplicates:
+•	Check for and remove duplicate rows to ensure data integrity.
+5.Correcting Inconsistencies:
+•	Standardize formats (e.g., date formats, text case) and correct any inconsistencies in the data.
+•	Final Data Quality Checks:
+o3	Perform final checks to ensure the dataset is clean and ready for analysis.
+
+##<a href="https://github.com/LUJAINALALAWI/MySQL/blob/main/README.md">Dataset used</a>
+##<a href="https://github.com/LUJAINALALAWI/MySQL/blob/main/MYSQL-DTA.CLEINING.sql">SQL cod used</a>
 
 
-SELECT *
-FROM layoffs;
+## Benefits
+•	Improved Data Quality: Ensures the dataset is accurate, consistent, and reliable.
+•	Enhanced Analysis: Prepares the data for meaningful analysis and visualization.
+•	Documentation: Provides a clear record of the cleaning process and decisions made.
+## Conclusion
+This data cleaning project focused on global layoffs showcases the importance of preparing data for analysis. By systematically addressing data quality issues, the project ensures that the dataset is ready for generating valuable insights. This project is a testament to the critical role of data cleaning in the data analysis pipeline.
 
--- 1.  Remove Duplicates
--- 2. Standardize the Data  
--- 3. Null values or blank values
--- 4. Remove any columns 
-
-
-CREATE TABLE layoffs_staging
-LIKE layoffs;
-
-SELECT *
-FROM layoffs_staging;
-
-INSERT layoffs_staging
-SELECT *
-FROM layoffs;
-
-SELECT *,
-ROW_NUMBER() OVER (
-PARTITION BY company, industry, total_laid_off, percentage_laid_off,'date') AS row_num
-FROM layoffs_staging;
-
-
-WITH dublicate_cte AS
-(
-SELECT *,
-ROW_NUMBER() OVER (
-PARTITION BY company, location, industry, total_laid_off, percentage_laid_off,'date', 
-stage, country, funds_raised_millions) AS row_num
-FROM layoffs_staging
-)
-SELECT *
-FROM dublicate_cte
-WHERE row_num > 1;
-
-SELECT *
-FROM layoffs_staging
-WHERE company = 'Oda';
-
-
-
-
-
-
-CREATE TABLE `layoffs_staging2` (
-  `company` text,
-  `location` text,
-  `industry` text,
-  `total_laid_off` int DEFAULT NULL,
-  `percentage_laid_off` text,
-  `date` text,
-  `stage` text,
-  `country` text,
-  `funds_raised_millions` int DEFAULT NULL,
-  `row_num` int
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-
-SELECT *
-FROM layoffs_staging2;
-
-
-
-INSERT INTO layoffs_staging2
-SELECT *,
-ROW_NUMBER() OVER(
-PARTITION BY  company, location, industry, total_laid_off, percentage_laid_off,'date', 
-stage, country, funds_raised_millions) AS row_num
-FROM layoffs_staging;
-
-
-SELECT *
-FROM layoffs_staging2
-WHERE row_num > 1;
-
-DELETE
-FROM layoffs_staging2
-WHERE row_num > 1;
-
-
--- Standardizing data
-
-
-SELECT company, TRIM(company)
-FROM layoffs_staging2;
-
-UPDATE layoffs_staging2
-SET company = TRIM(company);
-
-select  DISTINCT industry
-FROM layoffs_staging2
-order by 1;
-
-select  *
-FROM layoffs_staging2
-WHERE industry LIKE 'Crypto%';
-
-UPDATE layoffs_staging2
-SET industry = 'Crypto'
-WHERE industry LIKE 'Crypto%';
-
-
-select  DISTINCT country
-FROM layoffs_staging2
-order by 1;
-
-Select  DISTINCT country, TRIM(TRAILING '.' FROM country)
-FROM layoffs_staging2
-order by 1;
-
-
-UPDATE layoffs_staging2
-SET country = TRIM(TRAILING '.' FROM country)
-WHERE country LIKE 'United States%';
-
-
-SELECT `date`,
-STR_TO_DATE(`date`, '%m/%d/%Y')
-FROM layoffs_staging2;
-
-UPDATE layoffs_staging2
-SET `date`= STR_TO_DATE(`date`, '%m/%d/%Y');
-
-SELECT `date`
-FROM layoffs_staging2;
-
-ALTER TABLE layoffs_staging2
-MODIFY COLUMN `date` DATE;
-
-
-UPDATE layoffs_staging2
-SET industry = NULL
-WHERE industry ='';
-
-SELECT a1.industry, a2.industry
-FROM layoffs_staging2 a1
-JOIN layoffs_staging2 a2
-	on a1.company = a2.company
-WHERE (a1.industry IS NULL OR a1.industry ='')
-AND a2.industry IS NOT NULL;
-
-
-UPDATE layoffs_staging2 a1
-JOIN layoffs_staging2 a2
-	on a1.company = a2.company
-SET a1.industry = a2.industry
-WHERE a1.industry IS NULL
-AND a2.industry IS NOT NULL;
-
-select*
-FROM layoffs_staging2
-WHERE company = 'Airbnb';
-
-select *
-FROM layoffs_staging2;
-
-DELETE
-FROM layoffs_staging2
-WHERE total_laid_off IS NULL
-AND percentage_laid_off IS NULL;
-
-SELECT *
-FROM layoffs_staging2
-WHERE total_laid_off IS NULL
-AND percentage_laid_off IS NULL;
-
-
-
-ALTER TABLE layoffs_staging2
-DROP COLUMN row_num;
 
 
 
