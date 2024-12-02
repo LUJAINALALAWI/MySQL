@@ -13,6 +13,7 @@ o	Identify columns with missing values and decide on an appropriate strategy (e.
 •	Standardize formats (e.g., date formats, text case) and correct any inconsistencies in the data.
 •	Final Data Quality Checks:
 o3	Perform final checks to ensure the dataset is clean and ready for analysis.
+#
 
 ##<a href="https://github.com/LUJAINALALAWI/MySQL/blob/main/README.md">Dataset used</a>
 #
